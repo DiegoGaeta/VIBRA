@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import React from 'react';
 import MainScreen from './src/Presentation/screens/MainScreen';
+import  ProfileScreen  from './src/Presentation/screens/ProfileScreen';
 
-// Al retornar MainScreen directamente, él toma el control de la pantalla
-const App = () => {
-  return <MainScreen />;
-};
 
-export default App;
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState('home');
+
+  if (currentScreen === 'profile') {
+    return <ProfileScreen onBack={() => setCurrentScreen('home')} />;
+  }
+
+  return <MainScreen onNavigate={(screen) => setCurrentScreen(screen)} />;
+}

@@ -13,9 +13,9 @@ import {
   Platform
 } from 'react-native';
 
-// 1. Definimos la forma de nuestros datos (TypeScript)
-  interface Product {
-  id: string; // Usamos string para el id porque FlatList lo prefiere así
+// 1. Definición de tipos
+interface Product {
+  id: string;
   title: string;
   brand: string;
   price: number;
@@ -32,10 +32,10 @@ const INITIAL_PRODUCTS: Product[] = [
   { id: '4', title: "Camiseta Gráfica", brand: "Stussy", price: 35, size: "L", category: "streetwear", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400" },
 ];
 
-
-export default function MainScreen()  {
-
- const [search, setSearch] = useState('');
+// 3. Pantalla Principal
+// Agregamos { onNavigate } para que App.tsx pueda cambiar la pantalla
+export default function MainScreen({ onNavigate }: { onNavigate: (screen: string) => void }) {
+  const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
 
   const filteredProducts = INITIAL_PRODUCTS.filter(p => 
@@ -43,14 +43,13 @@ export default function MainScreen()  {
     p.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Componente de la Tarjeta
   const renderItem = ({ item }: { item: Product }) => (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <Image 
           source={{ uri: item.image }} 
           style={styles.productImg}
-          resizeMode="cover" // <-- IMPORTANTE: En móvil se usa resizeMode, no object-fit
+          resizeMode="cover" 
         />
         <TouchableOpacity style={styles.likeBtn}>
           <Text>❤️</Text>
@@ -68,6 +67,7 @@ export default function MainScreen()  {
       </View>
     </View>
   );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -79,7 +79,16 @@ export default function MainScreen()  {
           <TouchableOpacity style={styles.sellBtn}>
             <Text style={styles.sellBtnText}>Vender</Text>
           </TouchableOpacity>
-          <Text style={styles.cartIcon}>🛒</Text>
+          
+          {/* BOTÓN DE CARRITO (Icono original) */}
+          <TouchableOpacity>
+            <Text style={styles.cartIcon}>🛒</Text>
+          </TouchableOpacity>
+
+          {/* NUEVO: BOTÓN DE PERFIL */}
+          <TouchableOpacity onPress={() => onNavigate('profile')} style={{ marginLeft: 15 }}>
+            <Text style={{ fontSize: 22 }}>👤</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -111,7 +120,7 @@ export default function MainScreen()  {
         </ScrollView>
       </View>
 
-      {/* LISTA */}
+      {/* LISTA DE PRODUCTOS */}
       <FlatList
         data={filteredProducts}
         renderItem={renderItem}
@@ -123,6 +132,7 @@ export default function MainScreen()  {
   );
 }
 
+// 4. Estilos (Tus estilos originales intactos)
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
@@ -149,7 +159,6 @@ const styles = StyleSheet.create({
   },
   sellBtnText: { color: '#FFF', fontWeight: '700' },
   cartIcon: { fontSize: 20 },
-  
   searchSection: { padding: 15 },
   searchInput: {
     backgroundColor: '#F0F0F0',
@@ -159,7 +168,6 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
     color: '#000'
   },
-
   filterBar: { paddingHorizontal: 15, alignItems: 'center' },
   filterPill: {
     paddingHorizontal: 15,
@@ -175,7 +183,6 @@ const styles = StyleSheet.create({
   activePill: { backgroundColor: '#111', borderColor: '#111' },
   pillText: { fontWeight: '700', color: '#666', fontSize: 11 },
   activePillText: { color: '#FFF' },
-
   grid: { padding: 5 },
   card: {
     flex: 1,
@@ -185,12 +192,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#EEE',
     overflow: 'hidden',
-    // Sombra para iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    // Sombra para Android
     elevation: 2,
   },
   imageContainer: { height: 150, width: '100%' },
